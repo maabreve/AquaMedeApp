@@ -6,10 +6,6 @@ var app = (function () {
         return;
     }
 
-    var model = {
-
-    }
-
     var view = {
         init: function () {
             if (navigator.serviceWorker) {
@@ -27,10 +23,6 @@ var app = (function () {
             }
 
         }
-    };
-
-    var controller = {
-
     };
 
     view.init();
