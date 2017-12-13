@@ -8,6 +8,13 @@ var app = (function () {
 
     var view = {
         init: function () {
+            if (!('fetch' in window)) {
+                // TODO: handle
+                // console.log('Fetch API not found, try including the polyfill');
+                return;
+            }
+
+
         }
     };
 

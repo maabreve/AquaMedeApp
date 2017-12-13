@@ -17,7 +17,7 @@ module.exports = {
   "globDirectory": "build/",
   "globPatterns": [
     "**/*.css",
-    "**/*.html",
+    "**/*.js",
   ],
   "swSrc": "sw.js",
   "swDest": "build/sw.js",

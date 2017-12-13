@@ -51,20 +51,38 @@ workboxSW.router.registerRoute('/images/icon/*',
 
 
 // dynamics
-// var dashboardHandler = workboxSW.strategies.networkFirst({
-//   cacheName: 'dashboard-cache',
-//   cacheExpiration: {
-//     maxEntries: 50
-//   }
-// });
+var dashboardHandler = workboxSW.strategies.networkFirst({
+  cacheName: 'dashboard-cache',
+  cacheExpiration: {
+    maxEntries: 50
+  }
+});
 
-// workboxSW.router.registerRoute('/pages/dashboard*.html', args => {
-//   return dashboardHandler.handle(args).then(response => {
-//     if (!response) {
-//       return caches.match('pages/offline.html');
-//     } else if (response.status === 404) {
-//       return caches.match('pages/404.html');
-//     }
-//     return response;
-//   });
-// });
+workboxSW.router.registerRoute('/views/dashboard.ejs', args => {
+  return dashboardHandler.handle(args).then(response => {
+    if (!response) {
+      return caches.match('views/offline.html');
+    } else if (response.status === 404) {
+      return caches.match('views/404.html');
+    }
+    return response;
+  });
+});
+
+var informationsHandler = workboxSW.strategies.networkFirst({
+  cacheName: 'informations',
+  cacheExpiration: {
+    maxEntries: 50
+  }
+});
+
+workboxSW.router.registerRoute('/views/informations.ejs', args => {
+  return informationsHandler.handle(args).then(response => {
+    if (!response) {
+      return caches.match('views/offline.ejs');
+    } else if (response.status === 404) {
+      return caches.match('views/404.ejs');
+    }
+    return response;
+  });
+});
