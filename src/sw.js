@@ -49,8 +49,7 @@ workboxSW.router.registerRoute('/images/icon/*',
   })
 );
 
-
-// dynamics
+// network first
 var dashboardHandler = workboxSW.strategies.networkFirst({
   cacheName: 'dashboard-cache',
   cacheExpiration: {
@@ -58,12 +57,12 @@ var dashboardHandler = workboxSW.strategies.networkFirst({
   }
 });
 
-workboxSW.router.registerRoute('/views/dashboard.ejs', args => {
+workboxSW.router.registerRoute('/dashboard.ejs', args => {
   return dashboardHandler.handle(args).then(response => {
     if (!response) {
-      return caches.match('views/offline.html');
+      return caches.match('/offline.html');
     } else if (response.status === 404) {
-      return caches.match('views/404.html');
+      return caches.match('/404.html');
     }
     return response;
   });
@@ -76,12 +75,12 @@ var informationsHandler = workboxSW.strategies.networkFirst({
   }
 });
 
-workboxSW.router.registerRoute('/views/informations.ejs', args => {
+workboxSW.router.registerRoute('/informations.ejs', args => {
   return informationsHandler.handle(args).then(response => {
     if (!response) {
-      return caches.match('views/offline.ejs');
+      return caches.match('/offline.ejs');
     } else if (response.status === 404) {
-      return caches.match('views/404.ejs');
+      return caches.match('/404.ejs');
     }
     return response;
   });

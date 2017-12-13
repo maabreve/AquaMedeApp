@@ -23,12 +23,11 @@ var app = (function () {
             var initialcountererror = document.getElementById('initialregistererror');
             var peopleserror = document.getElementById('peopleserror');
             var targeterror = document.getElementById('targeterror');
-            var that = this;
+            
             // event handlers
             informationsForm.addEventListener('submit', function (ev) {
                 ev.preventDefault();
                 boardManager.updateBoard();
-
             }, false);
 
             initialregister.addEventListener('keydown', function (ev) {

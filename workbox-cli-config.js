@@ -18,6 +18,11 @@ module.exports = {
   "globPatterns": [
     "**/*.css",
     "**/*.js",
+    "views/index.ejs",
+    "views/404.ejs"
+    // ,
+    // "views/dashboard.ejs",
+    // "views/informations.ejs"
   ],
   "swSrc": "sw.js",
   "swDest": "build/sw.js",
