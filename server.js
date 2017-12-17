@@ -5,6 +5,7 @@
 var express = require('express');
 var app = express();
 var mongoose = require('mongoose');
+var mongooseCloud = require('mongoose');
 var passport = require('passport');
 var flash = require('connect-flash');
 
@@ -16,13 +17,11 @@ var config = require('./src/config/config.js');
 var configDB = require('./src/config/database.js');
 var port = process.env.PORT || config.port;
 
-// configuration ===============================================================
-mongoose.connect(configDB.url, function(err, db) {
-    if (err) {
-        console.log('Unable to connect to the server. Please start the server. Error:', err);
-    } else {
-        console.log('Connected to Server successfully!');
-    }
+// db connection ===============================================================
+mongoose.connect(configDB.urlCloud, { useMongoClient: true }).then(
+  console.log('Success local database connection')
+).catch(err => {
+  console.log('Local database connection error - ', err)
 });
 
 require('./src/config/passport')(passport); // pass passport for configuration
@@ -33,6 +32,11 @@ app.use(cookieParser('macaco vermeio')); // read cookies (needed for auth)
 app.use(bodyParser.json()); // get information from html forms
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/build'));
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 app.set('view engine', 'ejs'); // set up ejs for templating
 app.set('views', __dirname + '/build/views');

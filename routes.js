@@ -7,31 +7,15 @@ module.exports = function (app, passport, mongoose) {
         next();
     });
 
-    // normal routes ===============================================================
-    // HOME PAGE
+    // views routes ===============================================================
+    // DASHBOARD =========================
     app.get('/', isLoggedIn, function (req, res) {
 
-        Board.find(function (err, board) {
-            if (err)
-                res.send(err);
+        var request = require('request');
+        request
 
-            if (!board || (board && board.length === 0)) {
-                // TODO: handle 
-                res.send('Board não cadastrado');
-            } else {
-                if (!board[0].initialRegister) {
-                    res.redirect('/informations');
-                } else {
-                    res.render('dashboard.ejs', {
-                        user: req.user
-                    });
-                }
-            }
-
-        });
     });
 
-    // DASHBOARD =========================
     app.get('/dashboard', isLoggedIn, function (req, res) {
 
         Board.find(function (err, board) {
@@ -62,18 +46,15 @@ module.exports = function (app, passport, mongoose) {
         });
     });
 
-    // NOT CONNECTED =========================
-    app.get('/offline', function (req, res) {
-        res.render('offline.ejs', {
-            user: req.user
-        });
-    });
-
     // 404 =========================
     app.get('/404', function (req, res) {
-        res.render('404.ejs', {
-            user: req.user
-        });
+        res.render('404.ejs');
+    });
+
+
+    // 404 =========================
+    app.get('/boardNotRegistered', function (req, res) {
+        res.render('boardNotRegistered.ejs');
     });
 
     // LOGOUT ==============================
@@ -82,13 +63,40 @@ module.exports = function (app, passport, mongoose) {
         res.render('index.ejs');
     });
 
-    // API
+    // =============================================================================
+    // API ==================================================
+    // =============================================================================
+    app.route('/api/board/:serialNumber')
+        .get(function (req, res) {
+            Board.findOne({ 'serialNumber': req.params.serialNumber }, function (err, board) {
+                if (err)
+                    res.send(err);
+
+                res.json(board);
+            }).catch(err => {
+                // TODO: handle
+                console.log('Error GET /api/board - ', err);
+            });
+        });
+
     app.route('/api/board')
+        .get(function (req, res) {
+            Board.find(function (err, board) {
+                if (err)
+                    res.send(err);
+
+                res.json(board);
+            }).catch(err => {
+                // TODO: handle
+                console.log('Error GET /api/board - ', err);
+            });
+        })
+
         .post(function (req, res) {
             var board = new Board();
-            board.code = req.body.code;
-            board.counter = req.body.counter;
-            board.counterMonth = req.body.counterMonth;
+            board.serialNumber = req.body.serialNumber;
+            board.macAddress = req.body.macAddress;
+            board.dateBoardRegister = req.body.dateBoardRegister;
 
             board.save(function (error) {
                 if (error)
@@ -98,39 +106,31 @@ module.exports = function (app, passport, mongoose) {
             });
         })
 
-        .get(function (req, res) {
-            Board.find(function (err, board) {
-                if (err)
-                    res.send(err);
-
-                res.json(board);
-            });
-        })
-
         .put(function (req, res) {
-            Board.findById(req.body._id, function (error, board) {
 
+            Board.findOne({ serialNumber: req.body.serialNumber }, function (error, board) {
                 if (error)
-                    res.send(error);
+                    res.status(500).send(error);
 
-                if (req.body.initialRegister && req.body.initialRegister !== '')
-                    board.initialRegister = req.body.initialRegister;
+                if (req.body.mainEmail && req.body.mainEmail !== '')
+                    board.mainEmail = req.body.mainEmail;
 
-                if (req.body.currentRegister && req.body.currentRegister !== '')
-                    board.currentRegister = req.body.currentRegister;
+                if (req.body.initialHydrometer && req.body.initialHydrometer !== '' && req.body.initialHydrometer !== 0)
+                    board.initialHydrometer = req.body.initialHydrometer;
 
-                if (req.body.peoplesInHouse && req.body.peoplesInHouse !== '')
-                    board.peoplesInHouse = req.body.peoplesInHouse;
+                if (req.body.peoplesInTheHouse && req.body.peoplesInTheHouse !== '' && req.body.peoplesInTheHouse !== 0)
+                    board.peoplesInTheHouse = req.body.peoplesInTheHouse;
 
-                if (req.body.saveTarget && req.body.saveTarget !== '')
-                    board.saveTarget = req.body.saveTarget;
+                if (req.body.dateUserRegister)
+                    board.dateUserRegister = req.body.dateUserRegister;
 
                 board.save(function (error) {
                     if (error)
-                        res.send(error);
+                        res.status(500).send(error);
 
-                    res.json(board);
+                    res.status(200).json(board);
                 });
+
             });
         })
 
@@ -153,9 +153,6 @@ module.exports = function (app, passport, mongoose) {
         });
 
 
-
-
-
     // =============================================================================
     // AUTHENTICATE (FIRST LOGIN) ==================================================
     // =============================================================================
@@ -170,33 +167,7 @@ module.exports = function (app, passport, mongoose) {
         passport.authenticate('facebook', {
             failureRedirect: '/'
         }), (req, res) => {
-            Board.find(function (err, board) {
-                if (err)
-                    res.send(err);
-
-                if (!board || (board && board.length === 0)) {
-                    // insert board
-                    var board = new Board();
-                    board.email = req.user.facebook.email;
-                    board.code = 'B1';
-                    board.dateRegister = new Date();
-
-                    board.save(function (error) {
-                        if (error)
-                            res.send(error);
-
-                        res.redirect('/informations');
-                    });
-
-
-                } else {
-                    if (!board[0].initialRegister) {
-                        res.redirect('/informations');
-                    } else {
-                        res.redirect('/dashboard');
-                    }
-                }
-            });
+            loginCallback(req, res, req.user.facebook.email);
         });
 
     // twitter --------------------------------
@@ -209,33 +180,7 @@ module.exports = function (app, passport, mongoose) {
         passport.authenticate('twitter', {
             failureRedirect: '/'
         }), (req, res) => {
-            Board.find(function (err, board) {
-                if (err)
-                    res.send(err);
-
-                if (!board || (board && board.length === 0)) {
-                    // insert board
-                    var board = new Board();
-                    board.email = req.user.facebook.email;
-                    board.code = 'B1';
-                    board.dateRegister = new Date();
-
-                    board.save(function (error) {
-                        if (error)
-                            res.send(error);
-
-                        res.redirect('/informations');
-                    });
-
-
-                } else {
-                    if (!board[0].initialRegister) {
-                        res.redirect('/informations');
-                    } else {
-                        res.redirect('/dashboard');
-                    }
-                }
-            });
+            loginCallback(req, res, req.user.twitter.email);
         });
 
 
@@ -249,33 +194,7 @@ module.exports = function (app, passport, mongoose) {
         passport.authenticate('google', {
             failureRedirect: '/'
         }), (req, res) => {
-            Board.find(function (err, board) {
-                if (err)
-                    res.send(err);
-
-                if (!board || (board && board.length === 0)) {
-                    // insert board
-                    var board = new Board();
-                    board.email = req.user.facebook.email;
-                    board.code = 'B1';
-                    board.dateRegister = new Date();
-
-                    board.save(function (error) {
-                        if (error)
-                            res.send(error);
-
-                        res.redirect('/informations');
-                    });
-
-
-                } else {
-                    if (!board[0].initialRegister) {
-                        res.redirect('/informations');
-                    } else {
-                        res.redirect('/dashboard');
-                    }
-                }
-            });
+            loginCallback(req, res, req.user.google.email);
         });
 
     // =============================================================================
@@ -362,4 +281,37 @@ function isLoggedIn(req, res, next) {
     }
 
     res.render('index.ejs');
+}
+
+function loginCallback(req, res, email) {
+    var Board = require('./src/models/board.js');
+
+    Board.find(function (err, board) {
+        if (err)
+            res.send(err);
+
+        if (!board || (board && board.length === 0)) {
+            // insert board
+            var board = new Board();
+            board.mainEmail = email;
+            board.dateUserRegister = new Date();
+            board.initialHydrometer = req.body.initialHydrometer;
+            board.peoplesInTheHouse = req.body.peoplesInTheHouse;
+
+            board.save(function (error) {
+                if (error)
+                    res.send(error);
+
+                res.redirect('/informations');
+            });
+
+
+        } else {
+            if (!board[0].initialRegister) {
+                res.redirect('/informations');
+            } else {
+                res.redirect('/dashboard');
+            }
+        }
+    });
 }

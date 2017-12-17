@@ -14,80 +14,94 @@ var app = (function () {
                 return;
             }
 
-
             // controls
             var informationsForm = document.forms.namedItem('informationsForm');
-            var initialregister = document.getElementById('initialregister');
-            var peoples = document.getElementById('peoples');
-            var target = document.getElementById('target');
-            var initialcountererror = document.getElementById('initialregistererror');
-            var peopleserror = document.getElementById('peopleserror');
-            var targeterror = document.getElementById('targeterror');
-            
+            var initialHydrometer = document.getElementById('initialHydrometer');
+            var peoplesInTheHouse = document.getElementById('peoplesInTheHouse');
+            var initialHydrometerError = document.getElementById('initialHydrometerError');
+            var peoplesInTheHouseError = document.getElementById('peoplesInTheHouseError');
+
             // event handlers
             informationsForm.addEventListener('submit', function (ev) {
                 ev.preventDefault();
-                boardManager.updateBoard();
+                boardManager.updateCloudBoard();
             }, false);
-
-            initialregister.addEventListener('keydown', function (ev) {
-            }, false);
-
-            peoples.addEventListener('keydown', function (ev) {
-            }, false);
-
-            peoples.addEventListener('keydown', function (ev) {
-            }, false);
-
         }
     };
 
+
     var boardManager = {
-        fetchBoard: function () {
-            return fetch('api/board')
-                .then(response => {
-                    if (!response.ok) {
-                        throw Error(response.statusText);
-                    }
-                    return response.json();
-                })
-                .catch(); // controller.logError);
+        /* Cache Local Storage functions */
+        createIndexedDB: function () {
+            if (!('indexedDB' in window)) { return null; }
+            return idb.open('aquamede', 1, function (upgradeDb) {
+                if (!upgradeDb.objectStoreNames.contains('boards')) {
+                    const eventsOS = upgradeDb.createObjectStore('boards', { keyPath: 'id' });
+                }
+            });
         },
-        updateBoard: function () {
-            this.fetchBoard()
-                .then(board => {
-                    const currentboard = {
-                        _id: board[0]._id,
-                        initialRegister: initialregister.value,
-                        peoplesInHouse: peoples.value,
-                        saveTarget: target.value
-                    };
 
-                    const headers = new Headers({
-                        "Content-Type": "application/JSON",
-                        "X-Custom-Header": "ProcessThisImmediately",
-                    });
+        fetchCacheBoards: function () {
+            if (!('indexedDB' in window)) { return null; }
+            const dbPromise = this.createIndexedDB();
+            return dbPromise.then(db => {
+                const tx = db.transaction('boards', 'readonly');
+                const store = tx.objectStore('boards');
+                return store.getAll();
+            });
+        },
 
-                    const body = JSON.stringify(currentboard);
+        updateCloudBoard: function () {
+            boardManager.fetchCacheBoards()
+                .then(boards => {
+                    boards.map(board => {
+                        var editBoard = {
+                            serialNumber: board.serialNumber,
+                            initialHydrometer: initialHydrometer.value,
+                            peoplesInTheHouse: peoplesInTheHouse.value
+                        };
 
-                    fetch('api/board', {
-                        method: 'PUT',
-                        headers: headers,
-                        body: body,
-                        mode: 'cors'
-                    }).then(
-                        window.location.href = '/dashboard'
-                    )
-                    .catch(err => {
-                        // TODO: handle
-                        // controller.logError("Erro: ", err);
-                    });
-                })
-                .catch(err => {
-                    // TODO: handle
-                    return;
+                        const headers = new Headers({
+                            "Content-Type": "application/JSON",
+                            "Access-Control-Allow-Headers":"Origin, X-Requested-With, Content-Type, Accept",  
+                            "X-Custom-Header": "ProcessThisImmediately"
+                        });
+
+
+                        const body = JSON.stringify(editBoard);
+                        
+                        fetch('http://localhost:3001/api/board', {
+                            method: 'PUT',
+                            headers: headers,
+                            body: body,
+                            mode: 'cors'
+                        })
+                        .then(
+                            fetch('api/board', {
+                                method: 'PUT',
+                                headers: headers,
+                                body: body,
+                                mode: 'cors'
+                            })
+                            .then(
+                                console.log('informations updated'),
+                                window.location.href = '/dashboard'
+                            )
+                            .catch(err => {
+                                // TODO: handle
+                                console.log('error in update informations in cloud board');
+                            })
+                 
+                            
+                        )
+                        .catch(err => {
+                            // TODO: handle
+                            console.log('error in update informations in local board');
+                        });
+                    })
                 });
         }
+
     }
 
     view.init();

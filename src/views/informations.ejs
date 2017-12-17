@@ -53,23 +53,16 @@
                     <form enctype="multipart/form-data" method="post" name="informationsForm" role="form">
 
                         <div class="form-group">
-                            <input class="form-control" type="number" autofocus id="initialregister" name="initialcounter" placeholder="Contador atual do registro" required
+                            <input class="form-control" type="number" autofocus id="initialHydrometer" name="initialcounter" placeholder="Contador atual do hidrometro" required
                                 maxlength="3">
-                            <input type="label" id="initialregistererror" class="error" style="display:none">
+                            <input type="label" id="initialHydrometerError" class="error" style="display:none">
                         </div>
 
 
                         <div class="form-group">
-                            <input class="form-control" type="number" autofocus id="peoples" name="peoples" placeholder="Pessoas na casa" required
+                            <input class="form-control" type="number" autofocus id="peoplesInTheHouse" name="peoplesInTheHouse" placeholder="Pessoas na casa" required
                                 maxlength="3">
-                            <input type="label" id="peopleserror" class="error" style="display:none">
-                        </div>
-
-                   
-                        <div class="form-group">
-                            <input class="form-control" type="number" autofocus id="target" name="target" placeholder="Meta economia" required
-                                maxlength="5">
-                            <input type="label" id="targeterror" class="error" style="display:none">
+                            <input type="label" id="peoplesInTheHouseError" class="error" style="display:none">
                         </div>
 
                         <button type="submit" class="btn btn-info">finalizar</button>
@@ -83,6 +76,7 @@
 
     <!-- app -->
     <script src="/socket.io/socket.io.js"></script>
+    <script src="../js/idb-promised.js"></script>
     <script src="../js/informations.js"></script>
 </body>
 
