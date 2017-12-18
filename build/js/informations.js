@@ -24,7 +24,7 @@ var app = (function () {
             // event handlers
             informationsForm.addEventListener('submit', function (ev) {
                 ev.preventDefault();
-                boardManager.updateCloudBoard();
+                boardManager.updateBoard();
             }, false);
         }
     };
@@ -51,7 +51,7 @@ var app = (function () {
             });
         },
 
-        updateCloudBoard: function () {
+        updateBoard: function () {
             boardManager.fetchCacheBoards()
                 .then(boards => {
                     boards.map(board => {
@@ -91,8 +91,6 @@ var app = (function () {
                                 // TODO: handle
                                 console.log('error in update informations in cloud board');
                             })
-                 
-                            
                         )
                         .catch(err => {
                             // TODO: handle

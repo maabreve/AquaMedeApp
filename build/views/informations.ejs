@@ -53,27 +53,24 @@
                     <form enctype="multipart/form-data" method="post" name="informationsForm" role="form">
 
                         <div class="form-group">
-                            <input class="form-control" type="number" autofocus id="initialHydrometer" name="initialcounter" placeholder="Contador atual do hidrometro" required
-                                maxlength="3">
+                            <input class="form-control" type="number" autofocus id="initialHydrometer" name="initialcounter" placeholder="Contador atual do hidrometro"
+                                required maxlength="3">
                             <input type="label" id="initialHydrometerError" class="error" style="display:none">
                         </div>
 
 
                         <div class="form-group">
-                            <input class="form-control" type="number" autofocus id="peoplesInTheHouse" name="peoplesInTheHouse" placeholder="Pessoas na casa" required
-                                maxlength="3">
+                            <input class="form-control" type="number" autofocus id="peoplesInTheHouse" name="peoplesInTheHouse" placeholder="Pessoas na casa"
+                                required maxlength="3">
                             <input type="label" id="peoplesInTheHouseError" class="error" style="display:none">
                         </div>
 
                         <button type="submit" class="btn btn-info">finalizar</button>
-                        <a href="/logout" class="btn btn-danger">Logout</a>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
-
     <!-- app -->
     <script src="/socket.io/socket.io.js"></script>
     <script src="../js/idb-promised.js"></script>

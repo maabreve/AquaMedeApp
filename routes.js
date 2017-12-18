@@ -10,10 +10,24 @@ module.exports = function (app, passport, mongoose) {
     // views routes ===============================================================
     // DASHBOARD =========================
     app.get('/', isLoggedIn, function (req, res) {
+       Board.find(function (err, board) {
+            if (err)
+                res.send(err);
 
-        var request = require('request');
-        request
+            if (!board || (board && board.length === 0)) {
+                // TODO: handle 
+                res.send('Board não cadastrado');
+            } else {
+                if (!board[0].initialHydrometer) {
+                    res.redirect('/informations');
+                } else {
 
+                    res.render('dashboard.ejs', {
+                        user: req.user
+                    });
+                }
+            }
+        });
     });
 
     app.get('/dashboard', isLoggedIn, function (req, res) {
@@ -26,7 +40,7 @@ module.exports = function (app, passport, mongoose) {
                 // TODO: handle 
                 res.send('Board não cadastrado');
             } else {
-                if (!board[0].initialRegister) {
+                if (!board[0].initialHydrometer) {
                     res.redirect('/informations');
                 } else {
 
@@ -304,10 +318,10 @@ function loginCallback(req, res, email) {
 
                 res.redirect('/informations');
             });
-
+x
 
         } else {
-            if (!board[0].initialRegister) {
+            if (!board[0].initialHydrometer) {
                 res.redirect('/informations');
             } else {
                 res.redirect('/dashboard');

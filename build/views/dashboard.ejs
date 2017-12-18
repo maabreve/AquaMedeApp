@@ -40,23 +40,71 @@
 </head>
 
 <body>
-    <div class="container-fluid bg-home">
-        <div class="container">
-            <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-12 text-center">
-                    <img src="../images/aquamede-logo-m.png" alt="Aquamede Logo" class="logo">
-                </div>
-            </div>
-            <div class="row row-form">
-                <div class="col-xs-12 col-sm-12 col-md-4 col-md-offset-4">
-                    <form enctype="multipart/form-data" method="post" name="loginForm" role="form">
+    
+<div class="container-fluid bg-page">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-7 col-sm-6 col-md-6 text-left logo-page">
+				<img src="images/aquamede-logo-page.png" alt="Aquamed Logo" class="img-responsive">
+				<h3>Gestão de consumo de água</h3>
+			</div><!-- /col-md-6 -->
+			<div class="col-xs-5 col-sm-6 col-md-6 text-right tags-top">
+				<div class="tag-white" id="tag-1">
+					setembro/2017
+				</div>
+				<div class="tag-white" id="tag-2">
+					13/30
+				</div>
+				
+			</div><!-- /col-md-6 -->
+		</div><!-- /row -->
+		<div class="row">
+			<div class="text-center bg-painel-circ">
+				<div class="painel-top">
+					Hoje
+				</div><!-- end painel-->
+				<div class="painel-middle">
+					293,87
+				</div><!--end painel -->
+				<div class="painel-bottom">
+					Litros
+				</div><!-- end painel-->
+				<div class="txt-mes">
+					Mês:
+				</div>
+				<div class="txt-litros">
+					Em litros:
+				</div>
+				<div class="painel-square text-center">
+					3.194,24
+				</div><!-- end painel square-->
+			</div><!-- end painel circ-->
+		</div><!-- end row-->
+		
+		<div class="row row-info-consumo">
+			<div class="col-xs-6 col-sm-6 col-md-2 col-md-offset-4 colum-info-consumo" id="separador">
+				<h4>Média de Consumo:</h4>
+				<span>293,87</span> litros <br>
+				<span>3.194,70</span> litros/mês
+			</div>
+			<div class="col-xs-6 col-sm-6 col-md-6 colum-info-consumo">
+				<h4>Previsão de gasto:</h4>
+				<span>R$ 4,67</span>/dia <br>
+				<span>R$ 199,45</span> /mês
+			</div>
+		</div>
+
+		<div class="row btn-graficos">
+			<div class="col-xs-12 col-sm-12 col-md-12 text-center">
+				<a href="#">Ver Gráficos</a>
+			</div>
+		</div>
+                <form enctype="multipart/form-data" method="post" name="loginForm" role="form">
                         <a href="/logout" class="btn btn-danger">Logout</a>
                     </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    
+	</div><!-- /container-->
+</div>
 
     <!-- app -->
     <script src="/socket.io/socket.io.js"></script>
