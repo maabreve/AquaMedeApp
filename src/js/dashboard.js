@@ -14,7 +14,16 @@ var app = (function () {
                 return;
             }
 
+            let liters = document.getElementById('liters');
+            view.socketConnect();
 
+        },
+        socketConnect: function () {
+            var socket = io.connect('http://localhost:3000');
+            socket.on('liters', function (data) {
+                liters.innerHTML = data;
+                console.log(data);
+            });
         }
     };
 

@@ -56,8 +56,6 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
-// routes ======================================================================
-require('./routes.js')(app, passport, mongoose); 
 
 // launch ======================================================================
 const server = app.listen(port, () => {
@@ -72,3 +70,7 @@ io.on('connection', function (socket) {
   //socket.emit('counter', 10);
   console.log('socket connected!!!');
 });
+
+// routes ======================================================================
+require('./routes.js')(app, passport, mongoose, io); 
+

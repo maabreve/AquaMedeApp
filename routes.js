@@ -1,6 +1,7 @@
-module.exports = function (app, passport, mongoose) {
+module.exports = function (app, passport, mongoose, io) {
 
     var Board = require('./src/models/board.js');
+    var DiaryFlow = require('./src/models/diary-flow.js');
 
     app.use(function (req, res, next) {
         console.log('Middleware disparado........');
@@ -10,7 +11,7 @@ module.exports = function (app, passport, mongoose) {
     // views routes ===============================================================
     // DASHBOARD =========================
     app.get('/', isLoggedIn, function (req, res) {
-       Board.find(function (err, board) {
+        Board.find(function (err, board) {
             if (err)
                 res.send(err);
 
@@ -167,6 +168,48 @@ module.exports = function (app, passport, mongoose) {
         });
 
 
+    // water sensor
+    app.route('/api/diaryflow')
+        .get(function (req, res) {
+            DiaryFlow.find(function (err, board) {
+                if (err)
+                    res.status(500).send(err);
+
+                res.status(200).json(board);
+            }).catch(err => {
+                console.log('Error GET /api/board - ', err);
+            });
+        })
+
+        .post(function (req, res) {
+            
+            io.emit('liters', req.body.liters);
+                
+            var diaryflow = new DiaryFlow();
+            diaryflow.boardId = req.body.boardId;
+            diaryflow.liters = req.body.liters;
+            diaryflow.timestamp = new Date();
+                    
+            diaryflow.save(function (error) {
+                if (error)
+                    res.status(500).send(error);
+
+                res.status(200).json(diaryflow);
+            });
+        });
+        
+    app.route('/api/diaryflow/:_id')
+        .get(function (req, res) {
+            DiaryFlow.findById(req.body._id, function (err, board) {
+                if (err)
+                    res.status(500).send(err);
+
+                res.status(200).json(board);
+            }).catch(err => {
+                console.log('Error GET /api/diaryflow - ', err);
+            });
+        })
+
     // =============================================================================
     // AUTHENTICATE (FIRST LOGIN) ==================================================
     // =============================================================================
@@ -318,7 +361,7 @@ function loginCallback(req, res, email) {
 
                 res.redirect('/informations');
             });
-x
+            x
 
         } else {
             if (!board[0].initialHydrometer) {
