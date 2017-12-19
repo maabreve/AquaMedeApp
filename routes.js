@@ -182,22 +182,31 @@ module.exports = function (app, passport, mongoose, io) {
         })
 
         .post(function (req, res) {
+            console.log('diary flow receive ', req.body);
             
             io.emit('liters', req.body.liters);
-                
+
             var diaryflow = new DiaryFlow();
-            diaryflow.boardId = req.body.boardId;
+            diaryflow.boardSerialNumber = req.body.boardSerialNumber;
             diaryflow.liters = req.body.liters;
             diaryflow.timestamp = new Date();
-                    
+
             diaryflow.save(function (error) {
                 if (error)
                     res.status(500).send(error);
 
                 res.status(200).json(diaryflow);
             });
+        })
+        .delete(function (req, res) {
+            DiaryFlow.remove(function (error) {
+                if (error)
+                    res.send(error);
+
+                res.json({ message: 'All diary flows deleted' });
+            });
         });
-        
+
     app.route('/api/diaryflow/:_id')
         .get(function (req, res) {
             DiaryFlow.findById(req.body._id, function (err, board) {
@@ -209,6 +218,14 @@ module.exports = function (app, passport, mongoose, io) {
                 console.log('Error GET /api/diaryflow - ', err);
             });
         })
+        .delete(function (req, res) {
+            DiaryFlow.remove({ _id: req.body._id }, function (error) {
+                if (error)
+                    res.send(error);
+
+                res.json({ message: 'Diary flow deleted' });
+            });
+        });
 
     // =============================================================================
     // AUTHENTICATE (FIRST LOGIN) ==================================================

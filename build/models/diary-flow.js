@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var DiaryFlowSchema = new Schema({
-    boardId: String,
+    boardSerialNumber: String,
     timestamp: Date,
     liters: Number
 });

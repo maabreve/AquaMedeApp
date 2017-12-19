@@ -16,7 +16,6 @@ var app = (function () {
 
             let liters = document.getElementById('liters');
             view.socketConnect();
-
         },
         socketConnect: function () {
             var socket = io.connect('http://localhost:3000');

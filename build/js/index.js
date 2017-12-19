@@ -25,11 +25,12 @@ var app = (function () {
             // get cache board
             controller.fetchCacheBoards()
                 .then(boards => {
-                    if (boards.length === 0) {
+                    if (!boards || boards.length === 0) {
                         // fetch local board
                         controller.fetchLocalBoard().then(localBoards => {
                             if (localBoards && localBoards.length > 0) {
                                 // fetch cloud board
+                                console.log('localboards ', localBoards);
                                 controller.fetchCloudBoard(localBoards[0].serialNumber)
                                     .then(cloudBoard => {
                                         if (!cloudBoard || cloudBoard === null) {
