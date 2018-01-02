@@ -1,5 +1,5 @@
 {
-  "name": "acqua-mede",
+  "name": "aqua-mede",
   "main": "server.js",
   "version": "1.0.0",
   "description": "IOT for acqua manager",

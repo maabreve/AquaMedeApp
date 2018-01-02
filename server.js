@@ -18,7 +18,7 @@ var configDB = require('./src/config/database.js');
 var port = process.env.PORT || config.port;
 
 // db connection ===============================================================
-mongoose.connect(configDB.urlCloud, { useMongoClient: true }).then(
+mongoose.connect(configDB.urlCloud, { server: { reconnectTries: 60 * 60 * 24, reconnectInterval: 1000 }, useMongoClient: true }).then(
   console.log('Success local database connection')
 ).catch(err => {
   console.log('Local database connection error - ', err)
@@ -56,7 +56,6 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
-
 // launch ======================================================================
 const server = app.listen(port, () => {
   const host = server.address().address;
@@ -72,5 +71,4 @@ io.on('connection', function (socket) {
 });
 
 // routes ======================================================================
-require('./routes.js')(app, passport, mongoose, io); 
-
+require('./routes.js')(app, passport, mongoose, io);

@@ -31,7 +31,7 @@ var app = (function () {
                             if (localBoards && localBoards.length > 0) {
                                 // fetch cloud board
                                 console.log('localboards ', localBoards);
-                                controller.fetchCloudBoard(localBoards[0].serialNumber)
+                                 controller.fetchCloudBoard(localBoards[0].serialNumber)
                                     .then(cloudBoard => {
                                         if (!cloudBoard || cloudBoard === null) {
                                             console.log('cloud board not registered ');

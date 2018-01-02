@@ -178,12 +178,13 @@ module.exports = function (app, passport, mongoose, io) {
                 res.status(200).json(board);
             }).catch(err => {
                 console.log('Error GET /api/board - ', err);
+                res.status(500).send(err);
             });
         })
 
         .post(function (req, res) {
             console.log('diary flow receive ', req.body);
-            
+
             io.emit('liters', req.body.liters);
 
             var diaryflow = new DiaryFlow();
@@ -195,9 +196,14 @@ module.exports = function (app, passport, mongoose, io) {
                 if (error)
                     res.status(500).send(error);
 
+                console.log('diary flow posted', err);
                 res.status(200).json(diaryflow);
+            }).catch(err => {
+                // TODO: handle
+                console.log('Error in post diary flow', err);
             });
         })
+
         .delete(function (req, res) {
             DiaryFlow.remove(function (error) {
                 if (error)
@@ -227,7 +233,8 @@ module.exports = function (app, passport, mongoose, io) {
             });
         });
 
-    // =============================================================================
+
+        // =============================================================================
     // AUTHENTICATE (FIRST LOGIN) ==================================================
     // =============================================================================
 
