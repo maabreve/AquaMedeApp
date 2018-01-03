@@ -9,52 +9,20 @@ module.exports = function (app, passport, mongoose, io) {
     });
 
     // views routes ===============================================================
-    // DASHBOARD =========================
+    // dashboard =========================
     app.get('/', isLoggedIn, function (req, res) {
-        Board.find(function (err, board) {
-            if (err)
-                res.send(err);
-
-            if (!board || (board && board.length === 0)) {
-                // TODO: handle 
-                res.send('Board não cadastrado');
-            } else {
-                if (!board[0].initialHydrometer) {
-                    res.redirect('/informations');
-                } else {
-
-                    res.render('dashboard.ejs', {
-                        user: req.user
-                    });
-                }
-            }
+        res.render('dashboard.ejs', {
+            user: req.user
         });
     });
 
     app.get('/dashboard', isLoggedIn, function (req, res) {
-
-        Board.find(function (err, board) {
-            if (err)
-                res.send(err);
-
-            if (!board || (board && board.length === 0)) {
-                // TODO: handle 
-                res.send('Board não cadastrado');
-            } else {
-                if (!board[0].initialHydrometer) {
-                    res.redirect('/informations');
-                } else {
-
-                    res.render('dashboard.ejs', {
-                        user: req.user
-                    });
-                }
-            }
-
+        res.render('dashboard.ejs', {
+            user: req.user
         });
     });
 
-    // INFORMATIONS =========================
+    // informations =========================
     app.get('/informations', isLoggedIn, function (req, res) {
         res.render('informations.ejs', {
             user: req.user
@@ -66,13 +34,12 @@ module.exports = function (app, passport, mongoose, io) {
         res.render('404.ejs');
     });
 
-
-    // 404 =========================
+    // not registered =========================
     app.get('/boardNotRegistered', function (req, res) {
         res.render('boardNotRegistered.ejs');
     });
 
-    // LOGOUT ==============================
+    // logout ==============================
     app.get('/logout', function (req, res) {
         req.logout();
         res.render('index.ejs');
@@ -188,9 +155,13 @@ module.exports = function (app, passport, mongoose, io) {
             io.emit('liters', req.body.liters);
 
             var diaryflow = new DiaryFlow();
-            diaryflow.boardSerialNumber = req.body.boardSerialNumber;
-            diaryflow.liters = req.body.liters;
-            diaryflow.timestamp = new Date();
+            
+            diaryflow.idLeitura = req.body.idLeitura;
+            diaryflow.idSensor = req.body.idSensor;
+            diaryflow.vazaoInstantanea = req.body.vazaoInstantanea;
+            diaryflow.volumeTotalAcumulado =req.body.volumeTotalAcumulado;
+            diaryflow.volumeDiaAcumulado =req.body.volumeDiaAcumulado;
+            diaryflow.dataHora =req.body.dataHora;
 
             diaryflow.save(function (error) {
                 if (error)
@@ -234,7 +205,7 @@ module.exports = function (app, passport, mongoose, io) {
         });
 
 
-        // =============================================================================
+    // =============================================================================
     // AUTHENTICATE (FIRST LOGIN) ==================================================
     // =============================================================================
 
@@ -265,7 +236,7 @@ module.exports = function (app, passport, mongoose, io) {
         });
 
 
-    // google ---------------------------------
+    // google -------------- -------------------
 
     // send to google to do the authentication
     app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
@@ -385,8 +356,6 @@ function loginCallback(req, res, email) {
 
                 res.redirect('/informations');
             });
-            x
-
         } else {
             if (!board[0].initialHydrometer) {
                 res.redirect('/informations');

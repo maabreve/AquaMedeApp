@@ -157,7 +157,8 @@ var app = (function () {
             return dbPromise.then(db => {
                 const tx = db.transaction('boards', 'readwrite');
                 const store = tx.objectStore('boards');
-                return Promise.all(boards.map(board => { store.put(board), console.log('board saved in local cache', board) }))
+                return Promise.all(boards.map(board => { store.put(board), 
+                        console.log('board saved in local cache', board) }))
                     .catch(() => {
                         tx.abort();
                         throw Error('Boards were not added to the store');

@@ -2,9 +2,12 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var DiaryFlowSchema = new Schema({
-    boardSerialNumber: String,
-    timestamp: Date,
-    liters: Number
+    idLeitura: Number,
+    idSensor: Number,
+    vazaoInstantanea: Number,
+    volumeTotalAcumulado: Number,
+    volumeDiaAcumulado: Number,
+    dataHora: Date
 });
 
 module.exports = mongoose.model('DiaryFlow', DiaryFlowSchema);

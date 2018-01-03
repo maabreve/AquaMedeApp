@@ -2,112 +2,155 @@
 <html>
 
 <head>
-    <title>Aqua Mede</title>
+	<title>Aqua Mede</title>
 
-    <!-- Set the viewport -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+	<!-- Set the viewport -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-    <!-- Set character encoding -->
-    <meta charset="utf-8">
+	<!-- Set character encoding -->
+	<meta charset="utf-8">
 
-    <!-- Request fonts and styles -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700">
-    <link rel="stylesheet" href="../style/font-awesome.min.css">
-    <link rel="stylesheet" href="../style/main.css" />
-    <link rel="stylesheet" href="../style/bootstrap.min.css">
+	<!-- Request fonts and styles -->
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700">
+	<link rel="stylesheet" href="../style/font-awesome.min.css">
+	<link rel="stylesheet" href="../style/main.css" />
+	<link rel="stylesheet" href="../style/bootstrap.min.css">
 
-    <!-- Chrome for Android theme color -->
-    <meta name="theme-color" content="#2E3AA1">
+	<!-- Chrome for Android theme color -->
+	<meta name="theme-color" content="#2E3AA1">
 
-    <!-- Add to homescreen for Chrome on Android -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="PSK">
-    <link rel="icon" sizes="192x192" href="../images/touch/icon-192x192.png">
+	<!-- Add to homescreen for Chrome on Android -->
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="application-name" content="PSK">
+	<link rel="icon" sizes="192x192" href="../images/touch/icon-192x192.png">
 
-    <!-- Add to homescreen for Safari on iOS -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Polymer Starter Kit">
-    <link rel="apple-touch-icon" href="../images/touch/icon-192x192.png">
+	<!-- Add to homescreen for Safari on iOS -->
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-title" content="Polymer Starter Kit">
+	<link rel="apple-touch-icon" href="../images/touch/icon-192x192.png">
 
-    <!-- Tile for Win8 -->
-    <meta name="msapplication-TileColor" content="#3372DF">
-    <meta name="msapplication-TileImage" content="../images/touch/icon-192x192.png">
+	<!-- Tile for Win8 -->
+	<meta name="msapplication-TileColor" content="#3372DF">
+	<meta name="msapplication-TileImage" content="../images/touch/icon-192x192.png">
 
-    <!-- Manifest -->
-    <link rel="manifest" href="../manifest.json">
+	<!-- Manifest -->
+	<link rel="manifest" href="../manifest.json">
 
 </head>
 
 <body>
-    
-<div class="container-fluid bg-page">
-	<div class="container">
-		<div class="row">
-			<div class="col-xs-7 col-sm-6 col-md-6 text-left logo-page">
-				<img src="images/aquamede-logo-page.png" alt="Aquamed Logo" class="img-responsive">
-				<h3>Gestão de consumo de água</h3>
-			</div><!-- /col-md-6 -->
-			<div class="col-xs-5 col-sm-6 col-md-6 text-right tags-top">
-				<div class="tag-white" id="tag-1">
-					setembro/2017
+
+	<div class="container-fluid bg-page" id="dashboard-view" style="display: none">
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-7 col-sm-6 col-md-6 text-left logo-page">
+					<img src="images/aquamede-logo-page.png" alt="Aquamed Logo" class="img-responsive">
+					<h3>Gestão de consumo de água</h3>
 				</div>
-				<div class="tag-white" id="tag-2">
-					13/30
+				<!-- /col-md-6 -->
+				<div class="col-xs-5 col-sm-6 col-md-6 text-right tags-top">
+					<div class="tag-white" id="tag-1">
+						setembro/2017
+					</div>
+					<div class="tag-white" id="tag-2">
+						13/30
+					</div>
+
 				</div>
-				
-			</div><!-- /col-md-6 -->
-		</div><!-- /row -->
-		<div class="row">
-			<div class="text-center bg-painel-circ">
-				<div class="painel-top">
-					Hoje
-				</div><!-- end painel-->
-				<div class="painel-middle" >
-                    <p id="liters" name="liters">0</p>
-				</div><!--end painel -->
-				<div class="painel-bottom">
-					Litros
-				</div><!-- end painel-->
-				<div class="txt-mes">
-					Mês:
-				</div>
-				<div class="txt-litros">
-					Em litros:
-				</div>
-				<div class="painel-square text-center">
-					3.194,24
-				</div><!-- end painel square-->
-			</div><!-- end painel circ-->
-		</div><!-- end row-->
-		
-		<div class="row row-info-consumo">
-			<div class="col-xs-6 col-sm-6 col-md-2 col-md-offset-4 colum-info-consumo" id="separador">
-				<h4>Média de Consumo:</h4>
-				<span>293,02</span> litros <br>
-				<span>3.194,70</span> litros/mês
+				<!-- /col-md-6 -->
 			</div>
-			<div class="col-xs-6 col-sm-6 col-md-6 colum-info-consumo">
-				<h4>Previsão de gasto:</h4>
-				<span>R$ 4,67</span>/dia <br>
-				<span>R$ 199,45</span> /mês
+			<!-- /row -->
+			<div class="row">
+				<div class="text-center bg-painel-circ">
+					<div class="painel-top">
+						Hoje
+					</div>
+					<!-- end painel-->
+					<div class="painel-middle">
+						<p id="liters" name="liters">0</p>
+					</div>
+					<!--end painel -->
+					<div class="painel-bottom">
+						Litros
+					</div>
+					<!-- end painel-->
+					<div class="txt-mes">
+						Mês:
+					</div>
+					<div class="txt-litros">
+						Em litros:
+					</div>
+					<div class="painel-square text-center">
+						3.194,24
+					</div>
+					<!-- end painel square-->
+				</div>
+				<!-- end painel circ-->
+			</div>
+			<!-- end row-->
+
+			<div class="row row-info-consumo">
+				<div class="col-xs-6 col-sm-6 col-md-2 col-md-offset-4 colum-info-consumo" id="separador">
+					<h4>Média de Consumo:</h4>
+					<span>293,02</span> litros <br>
+					<span>3.194,70</span> litros/mês
+				</div>
+				<div class="col-xs-6 col-sm-6 col-md-6 colum-info-consumo">
+					<h4>Previsão de gasto:</h4>
+					<span>R$ 4,67</span>/dia <br>
+					<span>R$ 199,45</span> /mês
+				</div>
+			</div>
+
+			<div class="row btn-graficos">
+				<div class="col-xs-12 col-sm-12 col-md-12 text-center">
+					<a href="#">Ver Gráficos</a>
+				</div>
+			</div>
+			<form enctype="multipart/form-data" method="post" name="loginForm" role="form">
+				<a href="/logout" class="btn btn-danger">Logout</a>
+			</form>
+
+		</div>
+		<!-- /container-->
+	</div>
+
+	<div class="container-fluid bg-home" id="informations-view" style="display: none">
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-12 text-center">
+					<img src="../images/aquamede-logo-m.png" alt="Aquamede Logo" class="logo">
+				</div>
+			</div>
+			<div class="row row-form">
+				<div class="col-xs-12 col-sm-12 col-md-4 col-md-offset-4">
+
+					<form enctype="multipart/form-data" method="post" name="informationsForm" role="form">
+
+						<div class="form-group">
+							<input class="form-control" type="number" autofocus id="initialHydrometer" name="initialcounter" placeholder="Contador atual do hidrometro"
+							 required maxlength="3">
+							<input type="label" id="initialHydrometerError" class="error" style="display:none">
+						</div>
+
+
+						<div class="form-group">
+							<input class="form-control" type="number" autofocus id="peoplesInTheHouse" name="peoplesInTheHouse" placeholder="Pessoas na casa"
+							 required maxlength="3">
+							<input type="label" id="peoplesInTheHouseError" class="error" style="display:none">
+						</div>
+
+						<button type="submit" class="btn btn-info">finalizar</button>
+					</form>
+				</div>
 			</div>
 		</div>
+	</div>
 
-		<div class="row btn-graficos">
-			<div class="col-xs-12 col-sm-12 col-md-12 text-center">
-				<a href="#">Ver Gráficos</a>
-			</div>
-		</div>
-                <form enctype="multipart/form-data" method="post" name="loginForm" role="form">
-                        <a href="/logout" class="btn btn-danger">Logout</a>
-                    </form>
-    
-	</div><!-- /container-->
-</div>
-
-    <!-- app -->
-    <script src="/socket.io/socket.io.js"></script>
+	<!-- app -->
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="../js/idb-promised.js"></script>
     <script src="../js/dashboard.js"></script>
 </body>
 
