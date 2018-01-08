@@ -11,7 +11,8 @@ var app = (function () {
             // get cache board
             let dashboardView = document.getElementById('dashboard-view');
             let informationsView = document.getElementById('informations-view');
-            let liters = document.getElementById('liters');
+            let diaryCounter = document.getElementById('diaryCounter');
+            let monthlyCounter = document.getElementById('monthlyCounter');
             var informationsForm = document.forms.namedItem('informationsForm');
             var initialHydrometer = document.getElementById('initialHydrometer');
             var peoplesInTheHouse = document.getElementById('peoplesInTheHouse');
@@ -28,10 +29,16 @@ var app = (function () {
                                 ev.preventDefault();
                                 boardManager.updateBoard();
                             }, false);
-
                         } else {
+                            view.socketConnect(board.serialNumber);
+                            // get counters
+                            counterManager.fetchCloudCounter(board.serialNumber).then(counters=> {
+                                console.log('counters ', counters[0]);
+                                diaryCounter.innerHTML = counters[0].diaryCounter ? counters[0].diaryCounter : 0;
+                                monthlyCounter.innerHTML = counters[0].monthlyCounter ? counters[0].monthlyCounter : 0;
+                            });
+
                             dashboardView.style.display = "block";
-                            view.socketConnect();
                         }
                     });
                 })
@@ -40,11 +47,12 @@ var app = (function () {
                 });
         },
 
-        socketConnect: function () {
+        socketConnect: function (serialNumber) {
             var socket = io.connect('http://localhost:3000');
-            socket.on('liters', function (data) {
-                liters.innerHTML = data;
-                console.log(data);
+            socket.on(serialNumber, function (data) {
+                console.log('counters --> ', data);
+                diaryCounter.innerHTML = data.diary;
+                monthlyCounter.innerHTML = data.diary;
             });
         }
     };
@@ -90,7 +98,7 @@ var app = (function () {
                         let editBoards = [];
                         let dashboardView = document.getElementById('dashboard-view');
                         let informationsView = document.getElementById('informations-view');
-                        fetch('http://localhost:3001/api/board', {
+                        fetch('http://localhost:3002/api/board', {
                             method: 'PUT',
                             headers: headers,
                             body: body,
@@ -104,12 +112,9 @@ var app = (function () {
                                 mode: 'cors'
                             })
                                 .then(         
-                                    console.log('vai editar board ============'),
                                     editBoard.id = 1,
                                     editBoards.push(editBoard),
                                     boardManager.saveCacheBoard(editBoards),
-                                    console.log('board editado ============'),
-                                    console.log('informations updated'),
                                     dashboardView.style.display = "block",
                                     informationsView.style.display = "none"
                                 )
@@ -141,6 +146,29 @@ var app = (function () {
             });
         }
     };
+
+
+    var counterManager = {
+        fetchCloudCounter: function (serialNumber) {
+            var headers = new Headers();
+            headers.append("Content-Type", "application/json");
+
+            return fetch('/api/counter/' + serialNumber)
+                .then(response => {
+                    if (!response.ok) {
+                        messageBox.style.display = 'block';
+                        throw Error(response.statusText);
+                    }
+
+                    return response.json();
+                })
+                .catch(err => {
+                    // TODO: handle
+                    console.log('ERRO -> ', err);
+                    messageBox.style.display = 'block';
+                });
+        }
+    }
 
     view.init();
 

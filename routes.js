@@ -1,7 +1,8 @@
 module.exports = function (app, passport, mongoose, io) {
 
     var Board = require('./src/models/board.js');
-    var DiaryFlow = require('./src/models/diary-flow.js');
+    var CFlow = require('./src/models/cflow.js');
+    var Counter = require('./src/models/counters.js');
 
     app.use(function (req, res, next) {
         console.log('Middleware disparado........');
@@ -48,32 +49,7 @@ module.exports = function (app, passport, mongoose, io) {
     // =============================================================================
     // API ==================================================
     // =============================================================================
-    app.route('/api/board/:serialNumber')
-        .get(function (req, res) {
-            Board.findOne({ 'serialNumber': req.params.serialNumber }, function (err, board) {
-                if (err)
-                    res.send(err);
-
-                res.json(board);
-            }).catch(err => {
-                // TODO: handle
-                console.log('Error GET /api/board - ', err);
-            });
-        });
-
     app.route('/api/board')
-        .get(function (req, res) {
-            Board.find(function (err, board) {
-                if (err)
-                    res.send(err);
-
-                res.json(board);
-            }).catch(err => {
-                // TODO: handle
-                console.log('Error GET /api/board - ', err);
-            });
-        })
-
         .post(function (req, res) {
             var board = new Board();
             board.serialNumber = req.body.serialNumber;
@@ -89,7 +65,6 @@ module.exports = function (app, passport, mongoose, io) {
         })
 
         .put(function (req, res) {
-
             Board.findOne({ serialNumber: req.body.serialNumber }, function (error, board) {
                 if (error)
                     res.status(500).send(error);
@@ -122,87 +97,104 @@ module.exports = function (app, passport, mongoose, io) {
                     if (error)
                         res.send(error);
 
-                    res.json({ message: 'Board excluído com Sucesso! ' });
+                    res.status(200).json({ message: 'Board excluído com Sucesso! ' });
                 });
             } else {
                 Board.remove({ _id: req.body._id }, function (error) {
                     if (error)
                         res.send(error);
 
-                    res.json({ message: 'Board excluído com Sucesso! ' });
+                    res.status(200).json({ message: 'Board excluído com Sucesso! ' });
                 });
             }
         });
 
-
-    // water sensor
-    app.route('/api/diaryflow')
+    app.route('/api/board/:serialNumber')
         .get(function (req, res) {
-            DiaryFlow.find(function (err, board) {
+            Board.findOne({ 'serialNumber': req.params.serialNumber }, function (err, board) {
+                if (err)
+                    res.send(err);
+
+                res.json(board);
+            }).catch(err => {
+                // TODO: handle
+                console.log('Error GET /api/board - ', err);
+            });
+        });
+
+
+    app.route('/api/counter')
+        .get(function (req, res) {
+            Counter.find(function (err, flow) {
                 if (err)
                     res.status(500).send(err);
 
-                res.status(200).json(board);
+                res.status(200).json(flow);
             }).catch(err => {
                 console.log('Error GET /api/board - ', err);
                 res.status(500).send(err);
             });
         })
+        .put(function (req, res) {
+            console.log('counter update fired!!! ', req.body);
 
-        .post(function (req, res) {
-            console.log('diary flow receive ', req.body);
 
-            io.emit('liters', req.body.liters);
+            var counters = {
+                diary: req.body.diaryCounter,
+                monthly: req.body.monthlyCounter
+            };
 
-            var diaryflow = new DiaryFlow();
-            
-            diaryflow.idLeitura = req.body.idLeitura;
-            diaryflow.idSensor = req.body.idSensor;
-            diaryflow.vazaoInstantanea = req.body.vazaoInstantanea;
-            diaryflow.volumeTotalAcumulado =req.body.volumeTotalAcumulado;
-            diaryflow.volumeDiaAcumulado =req.body.volumeDiaAcumulado;
-            diaryflow.dataHora =req.body.dataHora;
+            io.emit(req.body.serialNumber, counters);
 
-            diaryflow.save(function (error) {
-                if (error)
-                    res.status(500).send(error);
-
-                console.log('diary flow posted', err);
-                res.status(200).json(diaryflow);
-            }).catch(err => {
-                // TODO: handle
-                console.log('Error in post diary flow', err);
-            });
-        })
-
-        .delete(function (req, res) {
-            DiaryFlow.remove(function (error) {
-                if (error)
-                    res.send(error);
-
-                res.json({ message: 'All diary flows deleted' });
-            });
-        });
-
-    app.route('/api/diaryflow/:_id')
-        .get(function (req, res) {
-            DiaryFlow.findById(req.body._id, function (err, board) {
+            Counter.findOne({ serialNumber: req.body.serialNumber }, function (err, counter) {
                 if (err)
                     res.status(500).send(err);
 
-                res.status(200).json(board);
-            }).catch(err => {
-                console.log('Error GET /api/diaryflow - ', err);
+                if (!counter) {
+                    let newcounter = new Counter();
+                    newcounter.serialNumber = req.body.serialNumber;
+                    newcounter.diaryCounter = req.body.diaryCounter;
+                    newcounter.monthlyCounter = req.body.monthlyCounter;
+                    newcounter.save();
+
+                    console.log('counter inserted ', newcounter);
+                } else {
+                    counter.diaryCounter = req.body.diaryCounter;
+                    counter.monthlyCounter = req.body.monthlyCounter;
+                    counter.save();
+
+                    console.log('counter updated ', counter);
+
+                }
+
+                res.status(200).json(counter);
             });
         })
         .delete(function (req, res) {
-            DiaryFlow.remove({ _id: req.body._id }, function (error) {
+            Counter.remove(function (error) {
                 if (error)
                     res.send(error);
 
-                res.json({ message: 'Diary flow deleted' });
+                res.status(200).json({ message: 'Counters excluídos com Sucesso! ' });
             });
         });
+
+
+    app.route('/api/counter/:serialNumber')
+        .get(function (req, res) {
+            Counter.find({ serialNumber: req.params.serialNumber }, function (err, flow) {
+                if (err)
+                    res.status(500).send(err);
+
+                res.status(200).json(flow);
+            }).catch(err => {
+                console.log('Error GET /api/board - ', err);
+                res.status(500).send(err);
+            });
+        });
+
+
+
 
 
     // =============================================================================

@@ -22,67 +22,74 @@ var app = (function () {
                     });
             }
 
+            let login = document.getElementById('login');
+            let messageBox = document.getElementById('messageBox');
+            let message = document.getElementById('message');
+
             // get cache board
             controller.fetchCacheBoards()
                 .then(boards => {
                     if (!boards || boards.length === 0) {
+                        // first time 
                         // fetch local board
-                        controller.fetchLocalBoard().then(localBoards => {
-                            if (localBoards && localBoards.length > 0) {
+                        controller.fetchLocalBoard().then(localBoard => {
+                            if (localBoard) {
                                 // fetch cloud board
-                                console.log('localboards ', localBoards);
-                                 controller.fetchCloudBoard(localBoards[0].serialNumber)
+                                controller.fetchCloudBoard(localBoard.serialNumber)
                                     .then(cloudBoard => {
-                                        if (!cloudBoard || cloudBoard === null) {
-                                            console.log('cloud board not registered ');
-                                            window.location.href = "/boardNotRegistered";
-                                        } else {
-                                            //TODO: implement multi boards
-                                            let newCacheBoard = [];
-                                            newCacheBoard.push({
-                                                _id: cloudBoard._id,
-                                                id: 1,
-                                                serialNumber: cloudBoard.serialNumber,
-                                                dateUserRegister: new Date()
-                                            });
 
-                                            controller.saveCacheBoard(newCacheBoard).then(() => {
-                                                register.style.display = 'block',
-                                                console.log('cache board saved')
-                                            }).catch(err => {
-                                                // TODO: handle
-                                                console.log('error in save cache board ', err);
-                                                window.location.href = "/boardNotRegistered";
-                                            });
+                                        if (!cloudBoard || cloudBoard === null) {
+                                            messageBox.style.display = 'block';
+                                            message.innerHTML = "Servidor remoto não localizado";
+                                            return;
                                         }
+
+                                        //TODO: implement multi boards
+                                        let newCacheBoard = [];
+                                        newCacheBoard.push({
+                                            id: 1,
+                                            _id: cloudBoard._id,
+                                            serialNumber: cloudBoard.serialNumber,
+                                            dateUserRegister: new Date()
+                                        });
+
+                                        controller.saveCacheBoard(newCacheBoard).then(() => {
+                                            login.style.display = 'block';
+                                            console.log('new board cached');
+                                        }).catch(err => {
+                                            // TODO: handle
+                                            messageBox.style.display = 'block';
+                                            message.innerHTML = err;
+                                        });
                                     })
                                     .catch(err => {
-                                        console.log('error in fetch cloud board ', err);
-                                        window.location.href = "/boardNotRegistered";
+                                        messageBox.style.display = 'block';
+                                        message.innerHTML = err;
                                     });
                             } else {
                                 // TODO: handle
-                                console.log('local board not registered');
-                                window.location.href = "/boardNotRegistered";
+                                messageBox.style.display = 'block';
+                                message.innerHTML = "Servidor local não localizado";
                             }
                         });
                     } else {
                         // TODO: implement multi boards
+                        login.style.display = 'block';
+                        
                         // get cloud board
-                        controller.fetchCloudBoard(boards[0].serialNumber).then(b => {
-                            console.log('cloud boards ', b);
-                            if (!b) {
-                                console.log('board not regisrtered in the cloud');
-                                window.location.href = '/boardNotRegistered';
-                            } else {
-                                register.style.display = 'block';
-                            }
-                        });
+                        // controller.fetchCloudBoard(boards[0].serialNumber).then(board => {
+                        //     if (!board) {
+                        //         messageBox.style.display = 'block';
+                        //         message.innerHTML = "Servidor remoto não localizado";
+                        //     } else {
+                        //         login.style.display = 'block';
+                        //     }
+                        // });
                     }
                 }).catch(err => {
                     console.log('get cache boards error ', err);
                 });
-            }
+        }
     };
 
     var controller = {
@@ -90,7 +97,7 @@ var app = (function () {
             var headers = new Headers();
             headers.append("Content-Type", "application/json");
 
-            return fetch('http://localhost:3001/api/board', {
+            return fetch('http://localhost:3002/api/board', {
                 method: 'GET',
                 headers: headers,
                 mode: 'cors',
@@ -107,7 +114,7 @@ var app = (function () {
                 .catch(err => {
                     // TODO: handle
                     console.log(err);
-                    window.location.href = "/boardNotRegistered";
+                    messageBox.style.display = 'block';
                 });
         },
 
@@ -118,7 +125,7 @@ var app = (function () {
             return fetch('/api/board/' + serialNumber)
                 .then(response => {
                     if (!response.ok) {
-                        window.location.href = "/boardNotRegistered";
+                        messageBox.style.display = 'block';
                         throw Error(response.statusText);
                     }
 
@@ -127,7 +134,7 @@ var app = (function () {
                 .catch(err => {
                     // TODO: handle
                     console.log('ERRO -> ', err);
-                    window.location.href = "/boardNotRegistered";
+                    messageBox.style.display = 'block';
                 });
         },
 
@@ -157,8 +164,10 @@ var app = (function () {
             return dbPromise.then(db => {
                 const tx = db.transaction('boards', 'readwrite');
                 const store = tx.objectStore('boards');
-                return Promise.all(boards.map(board => { store.put(board), 
-                        console.log('board saved in local cache', board) }))
+                return Promise.all(boards.map(board => {
+                    store.put(board),
+                        console.log('board saved in local cache', board)
+                }))
                     .catch(() => {
                         tx.abort();
                         throw Error('Boards were not added to the store');
